@@ -1,7 +1,7 @@
 import threading
 import socket
 
-HOST = ""
+HOST = '0.0.0.0'
 PORT = 9000
 clients = set()
 
@@ -36,6 +36,7 @@ class Server(object):
 
     def start(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print(self.hostname)
         self.socket.bind((self.hostname, self.port))
         self.socket.listen(5)
 

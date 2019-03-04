@@ -5,7 +5,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import QThread, Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QTextBrowser, QWidget, QFormLayout
 
-HOST = "localhost"
+HOST = 'localhost'
 PORT = 9000
 
 
@@ -83,10 +83,12 @@ class ClientUI(QMainWindow):
 
     def myclient(self, ip, port):
         try:
+            print('Attempting connection')
             self.sock.connect((ip, port))
         except:
             print('Couldn\'t find the server!!')
             self.Logger.append('Couldn\'t find the server!!')
+            return
         self.conBtn.setEnabled(False)
         self.SendBtn.setEnabled(True)
         self.disconBtn.setEnabled(True)
