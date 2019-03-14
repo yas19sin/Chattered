@@ -3,9 +3,10 @@ import socket
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import QThread, Qt
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QTextBrowser, QWidget, QFormLayout
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QTextBrowser, QWidget, QFormLayout, \
+    QLabel
 
-HOST = 'localhost'
+HOST = 'localhost'  # 'chattered.ddns.net'
 PORT = 9000
 
 
@@ -42,9 +43,18 @@ class ClientUI(QMainWindow):
         self.inputField.setText('')
         # self.layout().addWidget(self.inputField)
 
+        self.label_name = QLabel('Enter Your Name (default: Anonymous): ')
+        self.label_name.setParent(centralWidget)
+        self.label_name.setGeometry(90, 350, 200, 30)
+
+        self.inputField_name = QLineEdit()
+        self.inputField_name.setParent(centralWidget)
+        self.inputField_name.setGeometry(285, 350, 100, 30)
+        self.inputField_name.setText('Anonymous')
+
         self.disconBtn = QPushButton('Disconnect | Ctrl+D')
         self.disconBtn.setParent(centralWidget)
-        self.disconBtn.setGeometry(40, 350, 110, 30)
+        self.disconBtn.setGeometry(90, 400, 110, 30)
         self.disconBtn.setShortcut(QKeySequence(Qt.CTRL + Qt.Key_D))
         self.disconBtn.clicked.connect(self.disconnecting)
         self.disconBtn.setEnabled(False)
@@ -52,7 +62,7 @@ class ClientUI(QMainWindow):
 
         self.SendBtn = QPushButton('Send | Enter')
         self.SendBtn.setParent(centralWidget)
-        self.SendBtn.setGeometry(150, 350, 100, 30)
+        self.SendBtn.setGeometry(200, 400, 100, 30)
         self.SendBtn.setShortcut(QKeySequence(Qt.Key_Enter))
         self.SendBtn.clicked.connect(self.sendMsg)
         self.SendBtn.setEnabled(False)
@@ -60,7 +70,7 @@ class ClientUI(QMainWindow):
 
         self.conBtn = QPushButton('Connect | Ctrl+C')
         self.conBtn.setParent(centralWidget)
-        self.conBtn.setGeometry(250, 350, 100, 30)
+        self.conBtn.setGeometry(300, 400, 100, 30)
         self.conBtn.setShortcut(QKeySequence(Qt.CTRL + Qt.Key_C))
         self.conBtn.clicked.connect(self.connect)
         # centralWidget.layout().addWidget(self.conBtn)
@@ -78,7 +88,9 @@ class ClientUI(QMainWindow):
         self.msgReader.exit()
 
     def connect(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket()
+        if self.inputField_name.text() == '':
+            self.inputField_name.setText('Anonymous')
         self.myclient(HOST, PORT)
 
     def myclient(self, ip, port):
@@ -92,6 +104,7 @@ class ClientUI(QMainWindow):
         self.conBtn.setEnabled(False)
         self.SendBtn.setEnabled(True)
         self.disconBtn.setEnabled(True)
+        self.sock.sendall(self.inputField_name.text().encode())
         self.Logger.append('Connected to the Server!')
         self.msgReader = Reader(self.sock)
         self.msgReader.signal_result.connect(self.handleMsgLogging)
